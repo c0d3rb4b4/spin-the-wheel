@@ -77,7 +77,7 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const namesParam = urlParams.get('names');
-    const allNames = namesParam ? decodeURIComponent(namesParam).split(',') : ['No names!'];
+    const allNames = namesParam ? decodeURIComponent(namesParam).split(',').sort((a, b) => a.localeCompare(b)) : ['No names!'];
     let selectedNames = [...allNames];
 
     const wheel = document.getElementById('wheel');
