@@ -32,15 +32,6 @@
       font-weight: bold;
       padding: 5px;
     }
-    .slice-text {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 0 0;
-      white-space: nowrap;
-      color: white;
-      font-size: 14px;
-    }
     #spinBtn {
       padding: 10px 20px;
       font-size: 18px;
@@ -88,13 +79,7 @@
         slice.className = 'slice';
         slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
         slice.style.backgroundColor = i % 2 === 0 ? '#3498db' : '#e74c3c';
-
-        const text = document.createElement('div');
-        text.className = 'slice-text';
-        text.textContent = name;
-        text.style.transform = `skewY(-${90 - sliceAngle}deg) rotate(${sliceAngle / 2}deg)`;
-
-        slice.appendChild(text);
+        slice.innerHTML = `<div style="transform: skewY(-${90 - sliceAngle}deg) rotate(${sliceAngle / 2}deg); position: absolute; left: 5px; top: 50%; transform-origin: 0% 0%; white-space: nowrap;">${name}</div>`;
         wheel.appendChild(slice);
       });
     }
