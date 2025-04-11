@@ -7,8 +7,13 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
       margin-top: 50px;
+    }
+    #wheel-container {
+      text-align: center;
     }
     #wheel {
       width: 300px;
@@ -51,30 +56,64 @@
       position: relative;
       top: -15px;
     }
+    #nameList {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
   </style>
 </head>
 <body>
-  <h1>Spin the Wheel</h1>
-  <div id="pointer"></div>
-  <div id="wheel"></div>
-  <button id="spinBtn">Spin</button>
-  <div id="result"></div>
+  <div id="nameList"></div>
+  <div id="wheel-container">
+    <h1>Spin the Wheel</h1>
+    <div id="pointer"></div>
+    <div id="wheel"></div>
+    <button id="spinBtn">Spin</button>
+    <div id="result"></div>
+  </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const namesParam = urlParams.get('names');
-    const names = namesParam ? decodeURIComponent(namesParam).split(',') : ['No names!'];
+    const allNames = namesParam ? decodeURIComponent(namesParam).split(',') : ['No names!'];
+    let selectedNames = [...allNames];
 
     const wheel = document.getElementById('wheel');
     const resultDiv = document.getElementById('result');
     const spinBtn = document.getElementById('spinBtn');
+    const nameListDiv = document.getElementById('nameList');
 
     let currentRotation = 0;
 
+    function drawCheckboxes() {
+      nameListDiv.innerHTML = '<h3>Participants</h3>';
+      allNames.forEach(name => {
+        const label = document.createElement('label');
+        label.style.display = 'block';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.value = name;
+        checkbox.addEventListener('change', () => {
+          selectedNames = allNames.filter(n => {
+            const cb = document.querySelector(`input[value="${n}"]`);
+            return cb && cb.checked;
+          });
+          drawWheel();
+        });
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + name));
+        nameListDiv.appendChild(label);
+      });
+    }
+
     function drawWheel() {
       wheel.innerHTML = '';
-      const sliceAngle = 360 / names.length;
-      names.forEach((name, i) => {
+      if (selectedNames.length === 0) return;
+      const sliceAngle = 360 / selectedNames.length;
+      selectedNames.forEach((name, i) => {
         const slice = document.createElement('div');
         slice.className = 'slice';
         slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
@@ -85,18 +124,19 @@
     }
 
     function spinWheel() {
-      const randomIndex = Math.floor(Math.random() * names.length);
-      const sliceAngle = 360 / names.length;
+      if (selectedNames.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * selectedNames.length);
+      const sliceAngle = 360 / selectedNames.length;
       const targetAngle = 360 * 5 + (360 - randomIndex * sliceAngle - sliceAngle / 2);
       currentRotation += targetAngle;
       wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-      // Show result after spin completes
       setTimeout(() => {
-        resultDiv.textContent = `🎉 ${names[randomIndex]} wins!`;
+        resultDiv.textContent = `🎉 ${selectedNames[randomIndex]} wins!`;
       }, 4000);
     }
 
+    drawCheckboxes();
     drawWheel();
     spinBtn.addEventListener('click', spinWheel);
   </script>
