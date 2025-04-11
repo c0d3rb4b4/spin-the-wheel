@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin the Wheel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 10px solid #444;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .slice {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0% 0%;
+      background-color: #f5a623;
+      color: #fff;
+      font-weight: bold;
+      padding: 5px;
+    }
+    #spinBtn {
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+    #result {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spin the Wheel</h1>
+  <div id="wheel"></div>
+  <button id="spinBtn">Spin</button>
+  <div id="result"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const namesParam = urlParams.get('names');
+    const names = namesParam ? decodeURIComponent(namesParam).split(',') : ['No names!'];
+
+    const wheel = document.getElementById('wheel');
+    const resultDiv = document.getElementById('result');
+    const spinBtn = document.getElementById('spinBtn');
+
+    function drawWheel() {
+      wheel.innerHTML = '';
+      const sliceAngle = 360 / names.length;
+      names.forEach((name, i) => {
+        const slice = document.createElement('div');
+        slice.className = 'slice';
+        slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
+        slice.style.backgroundColor = i % 2 === 0 ? '#3498db' : '#e74c3c';
+        slice.innerHTML = `<div style="transform: skewY(-${90 - sliceAngle}deg) rotate(${sliceAngle / 2}deg); position: absolute; left: 5px; top: 50%; transform-origin: 0% 0%;">${name}</div>`;
+        wheel.appendChild(slice);
+      });
+    }
+
+    function spinWheel() {
+      const randomIndex = Math.floor(Math.random() * names.length);
+      const selected = names[randomIndex];
+      resultDiv.textContent = `🎉 ${selected} wins!`;
+    }
+
+    drawWheel();
+    spinBtn.addEventListener('click', spinWheel);
+  </script>
+</body>
+</html>
